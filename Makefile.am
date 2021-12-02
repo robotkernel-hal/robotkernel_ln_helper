@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4 
-SUBDIRS=src/main/cpp src/generator/cpp
+SUBDIRS=src/main/cpp
 
-pkgconfig_DATA = bridge_ln.pc
+pkgconfig_DATA = ln_helper.pc
 

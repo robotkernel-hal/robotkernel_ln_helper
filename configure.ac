@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.63])
 AC_INIT(
-	[bridge_ln],
+	[ln_helper],
 	m4_esyscmd_s([cat project.properties | grep VERSION    | cut -d'=' -f2 | xargs printf "%s"]),
 	m4_esyscmd_s([cat project.properties | grep MAINTAINER | cut -d'=' -f2 | xargs printf "%s"]))
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
@@ -24,8 +24,9 @@ m4_ifdef([PKG_PROG_PKG_CONFIG], [PKG_PROG_PKG_CONFIG])
 m4_ifdef([PKG_INSTALLDIR], [PKG_INSTALLDIR], [pkgconfigdir='${libdir}/pkgconfig' AC_SUBST([pkgconfigdir])])
 
 # Check dependencies
-PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel])
 PKG_CHECK_MODULES([LINKS_AND_NODES], [liblinks_and_nodes])
+PKG_CHECK_MODULES([LIBSTRING_UTIL], [libstring_util])
+PKG_CHECK_MODULES([YAML_CPP], [yaml-cpp])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h termios.h])
@@ -39,7 +40,7 @@ AC_CHECK_FUNCS([strdup])
 # Checks for library functions.
 AC_CHECK_LIB(dl, dlopen)
 
-AC_CONFIG_FILES([Makefile src/main/cpp/Makefile src/generator/cpp/Makefile bridge_ln.pc])
+AC_CONFIG_FILES([Makefile src/main/cpp/Makefile ln_helper.pc])
 
 AC_OUTPUT
 
