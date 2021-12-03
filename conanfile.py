@@ -13,7 +13,6 @@ class MainProject(ConanFile):
 
     def requirements(self):
         self.requires("libstring_util/[~=1]@common/stable")
-        self.requires("liblinks_and_nodes/[>=1.2.3 <3]@common/stable") 
         self.requires("yaml-cpp/[~=0]@3rdparty/stable")
     
     def source(self):
