@@ -34,6 +34,12 @@ static bool ends_with(const std::string& a, const std::string& b) {
 static std::string service_datatype_to_ln(std::string datatype) {
     if (datatype == "string")
         return std::string("char*");
+    else if (datatype == "bitarr8_t") 
+        return std::string("uint8_t");
+    else if (datatype == "bitarr16_t") 
+        return std::string("uint16_t");
+    else if (datatype == "bitarr32_t") 
+        return std::string("uint32_t");
 
     return datatype;
 }
