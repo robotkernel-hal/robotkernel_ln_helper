@@ -94,7 +94,7 @@ static void rk_datatype_to_ln(const std::string& rk_datatype, std::string& ln_da
             size_t pos_1 = 3;
             size_t pos_2 = rk_datatype.find('_');
 
-            string bits = rk_datatype.substr(pos_1, pos_2);
+            std::string bits = rk_datatype.substr(pos_1, pos_2);
         }
     }
 }
