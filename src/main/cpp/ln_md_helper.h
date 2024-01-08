@@ -80,6 +80,25 @@ static int ln_datatype_size(const std::string& ln_datatype) {
     return 0;
 }
 
+static void rk_datatype_to_ln(const std::string& rk_datatype, std::string& ln_datatype, int& array) 
+{
+    array = 0; // defaults to scalar
+     
+    if (rk_datatype == "string") {
+        ln_datatype = std::string("char*");
+    } else if (ln_datatype_size_map.find(rk_datatype) != ln_datatype_size_map.end()) {
+        ln_datatype = rk_datatype;
+    } else {
+        if (rk_datatype.compare(0, 3, "int") == 0) {
+            // decode bits
+            size_t pos_1 = 3;
+            size_t pos_2 = rk_datatype.find('_');
+
+            string bits = rk_datatype.substr(pos_1, pos_2);
+        }
+    }
+}
+
 static void process_node(const YAML::Node& node,
         std::stringstream& ss_md, std::stringstream& ss_signature,
         std::map<std::string, std::string>& sub_mds)
