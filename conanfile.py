@@ -1,6 +1,9 @@
+import os
+import re
+
 from conan import ConanFile
 from conan.tools.gnu import Autotools
-import os, re
+
 
 class MainProject(ConanFile):
     package_type = "shared-library"
@@ -16,7 +19,7 @@ class MainProject(ConanFile):
     def requirements(self):
         self.requires("libstring_util/[~1]@common/stable", transitive_libs=True)
         self.requires("yaml-cpp/0.7.0@3rdparty/stable", transitive_libs=True)
-    
+
     def source(self):
         filedata = None
         filename = "project.properties"
@@ -24,9 +27,9 @@ class MainProject(ConanFile):
         if not os.path.isfile(filename):
             return
 
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             filedata = f.read()
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             f.write(re.sub("VERSION *=.*[^\n]", f"VERSION = {self.version}", filedata))
 
     def build(self):
@@ -40,10 +43,7 @@ class MainProject(ConanFile):
         autotools.install()
 
     def package_info(self):
-        self.cpp_info.includedirs = ['include']
-        self.cpp_info.bindirs = ['bin']
-        self.cpp_info.libdirs = ['lib']
-        self.cpp_info.resdirs = ['share']
-
-    
-
+        self.cpp_info.includedirs = ["include"]
+        self.cpp_info.bindirs = ["bin"]
+        self.cpp_info.libdirs = ["lib"]
+        self.cpp_info.resdirs = ["share"]
