@@ -1,19 +1,21 @@
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conan import ConanFile
+from conan.tools.gnu import Autotools
 import os, re
 
 class MainProject(ConanFile):
+    package_type = "shared-library"
     name = "ln_helper"
     license = "GPLv3"
     author = "Robert Burger <robert.burger@dlr.de>"
-    generators = "pkg_config"
+    generators = "AutotoolsToolchain", "PkgConfigDeps"
     url = "undefined"
     description = "Helpers for links-and-nodes support."
-    exports_sources = ["*", "!.gitignore"] + ["!%s" % x for x in tools.Git().excluded_files()]
+    exports_sources = ["*", "!.gitignore"]
     settings = "os", "compiler", "build_type", "arch"
 
     def requirements(self):
-        self.requires("libstring_util/[~=1]@common/stable")
-        self.requires("yaml-cpp/0.7.0@3rdparty/stable")
+        self.requires("libstring_util/[~1]@common/stable", transitive_libs=True)
+        self.requires("yaml-cpp/0.7.0@3rdparty/stable", transitive_libs=True)
     
     def source(self):
         filedata = None
@@ -29,19 +31,12 @@ class MainProject(ConanFile):
 
     def build(self):
         self.run("autoreconf -if")
-        autotools = AutoToolsBuildEnvironment(self)
-        autotools.libs=[]
-        autotools.include_paths=[]
-        autotools.library_paths=[]
-        if self.settings.build_type == "Debug":
-            autotools.flags = ["-O0", "-g", "-fno-builtin-strlen"]
-        else:
-            autotools.flags = ["-O2"]
-        autotools.configure(configure_dir=".")
+        autotools = Autotools(self)
+        autotools.configure()
         autotools.make()
 
     def package(self):
-        autotools = AutoToolsBuildEnvironment(self)
+        autotools = Autotools(self)
         autotools.install()
 
     def package_info(self):
