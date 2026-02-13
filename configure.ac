@@ -24,7 +24,6 @@ m4_ifdef([PKG_PROG_PKG_CONFIG], [PKG_PROG_PKG_CONFIG])
 m4_ifdef([PKG_INSTALLDIR], [PKG_INSTALLDIR], [pkgconfigdir='${libdir}/pkgconfig' AC_SUBST([pkgconfigdir])])
 
 # Check dependencies
-PKG_CHECK_MODULES([LIBSTRING_UTIL], [libstring_util])
 PKG_CHECK_MODULES([YAML_CPP], [yaml-cpp])
 
 # Checks for header files.

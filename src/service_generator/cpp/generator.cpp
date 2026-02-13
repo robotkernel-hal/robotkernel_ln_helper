@@ -6,13 +6,19 @@
 #include <errno.h>
 
 #include <list>
-#include "ln_md_helper.h"
+//#include "ln_md_helper.h"
 #include <fstream>
 typedef void (*get_sd_t)(std::list<std::string>& sd_list);
 
 #include "fs_tools.h"
 
+#include "ln_helper/field.h"
+#include "ln_helper/datatype.h"
+#include "ln_helper/service.h"
+
 using namespace std;
+//using namespace ln_md_helper;
+using namespace ln_helper;
 
 int usage(void) {
     printf("usage: service_generator --input | -i <filename> [-v]\n");
@@ -49,7 +55,69 @@ int main(int argc, char **argv) {
 
     YAML::Node node = YAML::LoadFile(input_file_name);
 
-    string name = node["name"].as<string>();
+    helper h(node);
+
+    for (const auto& kv : h.svc_map) {
+        service *svc = kv.second;
+        ln_signature_stream lss;
+        ln_mddef_stream mdss;
+
+        stringstream ss;
+        ss << *svc;
+        printf("got service \n\"%s\"\n", ss.str().c_str());
+
+        lss << *svc;
+        printf("got sig\n%s\n", lss.str().c_str());
+
+        mdss << *svc;
+        printf("\ngot mddef\n%s\n", mdss.str().c_str());
+
+        for (const auto& kv : mdss.seen_defines) {
+            printf("\nalso need \"%s\"\n", kv.first.c_str());;
+
+            if (h.dt_map.find(kv.first) != h.dt_map.end()) {
+                ln_mddef_stream dtmdss;
+                dtmdss << *h.dt_map[kv.first];
+                printf("%s\n", dtmdss.str().c_str());
+            }
+        }
+    }
+#if 0
+    if (node["datatypes"]) {
+        for (const auto& d : node["datatypes"]) {
+            ln_signature_stream lss;
+
+            datatype *dt = new datatype(&h, d);
+            h.dt_map[dt->name] = dt;
+
+            stringstream ss;
+            ss << *dt;
+            printf("got datatype \n\"%s\"\n", ss.str().c_str());
+
+            lss << *dt;
+            printf("got sig\n%s\n", lss.str().c_str());
+        }
+    }
+    
+    if (node["services"]) {
+        for (const auto& d : node["services"]) {
+            ln_signature_stream lss;
+
+            service *svc = new service(&h, d);
+            h.svc_map[svc->name] = svc;
+
+            stringstream ss;
+            ss << *svc;
+            printf("got service \n\"%s\"\n", ss.str().c_str());
+
+            lss << *svc;
+            printf("got sig\n%s\n", lss.str().c_str());
+        }
+    }
+#endif
+
+#if 0
+    string name = ln_md_helper::get_as<string>(node, "name");
 
     if (node["request"]) {
         printf("got request field\n");
@@ -76,6 +144,7 @@ int main(int argc, char **argv) {
             "    public:\n"
             "        virtual void %s_handler(const %s_request_t& req, %s_response_t& resp) = 0;\n"
             "};\n\n", name.c_str(), name.c_str(), name.c_str(), name.c_str());
+#endif
     
     return 0;
 }

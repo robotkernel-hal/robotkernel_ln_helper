@@ -111,78 +111,87 @@ static void process_node(const YAML::Node& node,
 {
     std::map<std::string, std::string> defines_map;
 
-    for (YAML::const_iterator it = node.begin(); it != node.end(); ++it) {
-        if (it != node.begin())
-            ss_signature << ",";
+    auto process_entry = [&](const std::string& name, const std::string& dtype, bool is_array = false) -> void {
+        std::string clean_name = name;
+        std::replace(clean_name.begin(), clean_name.end(), '.', '_');
 
-        for (const auto& kv : *it) {
-            std::string key   = kv.first.as<std::string>();
-            std::string value = kv.second.as<std::string>();
-            
-            std::replace(value.begin(), value.end(), '.', '_');
+        if (starts_with(dtype, "vector/") || is_array) {
+            std::string real_dtype = dtype;
 
-            if (starts_with(key, "vector")) {
-                const size_t equals_idx = key.find_first_of('/');
-                if (std::string::npos != equals_idx)
-                {
-                    //signature "uint32_t 4 1,[uint32_t 4 1,char* 1 1]* 8 1|uint32_t 4 1,[uint32_t 4 1,char* 1 1]* 8 1"
+            const size_t equals_idx = dtype.find_first_of('/');
+            if (std::string::npos != equals_idx) { real_dtype = dtype.substr(equals_idx + 1); }
+                
+            //signature "uint32_t 4 1,[uint32_t 4 1,char* 1 1]* 8 1|uint32_t 4 1,[uint32_t 4 1,char* 1 1]* 8 1"
 
-                    std::string vector = key.substr(0, equals_idx);
-                    std::string real_key = key.substr(equals_idx + 1);
+            bool is_primitive = ln_datatype_is_primitive(real_dtype);
 
-                    bool is_primitive = ln_datatype_is_primitive(real_key);
+            std::string ln_dt = service_datatype_to_ln(real_dtype);
+            int ln_dt_size = ln_datatype_size(ln_dt);
 
-                    std::string ln_dt = service_datatype_to_ln(real_key);
-                    int ln_dt_size = ln_datatype_size(ln_dt);
-
-                    if (is_primitive) {
-                        ss_signature << "uint32_t 4 1," << ln_dt << "* " << ln_dt_size << " 1";
-                        ss_md << ln_dt << "* " << value << std::endl;
-                    } else {
-                        ss_signature << "uint32_t 4 1,[";
-
-                        std::string sub_md_name = std::string("gen/") + key;
-
-                        if (real_key == "string") {
-                            // special case, use ln builtin type for that
-                            sub_md_name = "ln/string";
-                        } else {
-                            std::stringstream ss_sub_md;
-                            ss_sub_md << ln_dt << " data" << std::endl;
-                            sub_mds[key] = ss_sub_md.str();
-                        }
-
-                        if (defines_map.find(real_key) == defines_map.end()) {
-                            ss_md << "define " << real_key << " as \"" << sub_md_name << "\"" << std::endl;
-                            defines_map[real_key] = sub_md_name;
-                        } else if (defines_map[real_key] != sub_md_name) {                            
-                            std::cout << "error: defines_map[" << real_key << "]=" << defines_map[real_key] << ", but we need " << sub_md_name << std::endl;
-                        }
-
-                        ss_md << real_key << "* " << value << std::endl;
-
-                        if (ends_with(ln_dt, std::string("*")))
-                            ss_signature << "uint32_t 4 1,";
-
-                        ss_signature << ln_dt << " " << ln_dt_size << " " << "1";
-
-                        ss_signature << "]* " << sizeof(void*) << " 1";
-                    }
-                }
-                else
-                {
-                    //name = name_value;
-                    std::cout << "error after vector" << std::endl;
-                }
+            if (is_primitive) {
+                ss_signature << "uint32_t 4 1," << ln_dt << "* " << ln_dt_size << " 1";
+                ss_md << ln_dt << "* " << clean_name << std::endl;
             } else {
-                std::string ln_dt = service_datatype_to_ln(key);
-                int ln_dt_size = ln_datatype_size(ln_dt);
-                ss_md << ln_dt << " " << value << std::endl;
+                ss_signature << "uint32_t 4 1,[";
+
+                std::string sub_md_name = std::string("gen/") + dtype;
+
+                if (real_dtype == "string") {
+                    // special case, use ln builtin type for that
+                    sub_md_name = "ln/string";
+                } else {
+                    std::stringstream ss_sub_md;
+                    ss_sub_md << ln_dt << " data" << std::endl;
+                    sub_mds[dtype] = ss_sub_md.str();
+                }
+
+                if (defines_map.find(real_dtype) == defines_map.end()) {
+                    ss_md << "define " << real_dtype << " as \"" << sub_md_name << "\"" << std::endl;
+                    defines_map[real_dtype] = sub_md_name;
+                } else if (defines_map[real_dtype] != sub_md_name) {                            
+                    std::cout << "error: defines_map[" << real_dtype << "]=" << defines_map[real_dtype] << ", but we need " << sub_md_name << std::endl;
+                }
+
+                ss_md << real_dtype << "* " << clean_name << std::endl;
 
                 if (ends_with(ln_dt, std::string("*")))
                     ss_signature << "uint32_t 4 1,";
 
                 ss_signature << ln_dt << " " << ln_dt_size << " " << "1";
+
+                ss_signature << "]* " << sizeof(void*) << " 1";
+            }
+        } else {
+            std::string ln_dt = service_datatype_to_ln(dtype);
+            int ln_dt_size = ln_datatype_size(ln_dt);
+            ss_md << ln_dt << " " << clean_name << std::endl;
+
+            if (ends_with(ln_dt, std::string("*")))
+                ss_signature << "uint32_t 4 1,";
+
+            ss_signature << ln_dt << " " << ln_dt_size << " " << "1";
+        }
+    };
+
+    YAML::Emitter tmp;
+    tmp << node;
+    printf("processing: \n%s\n", tmp.c_str());
+
+    for (YAML::const_iterator it = node.begin(); it != node.end(); ++it) {
+        if (it != node.begin())
+            ss_signature << ",";
+
+        if (it->IsMap() && (*it)["name"]) { // complex format
+            std::string name = (*it)["name"].as<std::string>();
+            std::string dtype = (*it)["type"].as<std::string>();
+            bool is_array = (*it)["array"] ? (*it)["array"].as<bool>() : false;
+
+            process_entry(name, dtype, is_array);
+        } else { // simple format
+            for (const auto& kv : *it) {
+                std::string key   = kv.first.as<std::string>();
+                std::string value = kv.second.as<std::string>();
+                process_entry(value, key);
             }
         }
     }

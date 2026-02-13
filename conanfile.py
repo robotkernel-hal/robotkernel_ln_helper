@@ -12,9 +12,8 @@ class MainProject(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
 
     def requirements(self):
-        self.requires("libstring_util/[~=1]@common/stable")
-        self.requires("yaml-cpp/0.6.2@3rdparty/stable")
-    
+        self.requires("yaml-cpp/0.7.0@3rdparty/stable", transitive_headers=True, transitive_libs=True)
+
     def source(self):
         filedata = None
         filename = "project.properties"

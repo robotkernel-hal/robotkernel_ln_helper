@@ -1,0 +1,27 @@
+#ifndef LN_HELPER__HELPER_H
+#define LN_HELPER__HELPER_H
+
+#include <map>
+
+#include "yaml-cpp/yaml.h"
+
+namespace ln_helper {
+
+// forward decls
+class datatype;
+class service;
+
+class helper {
+    public:
+        YAML::Node node;
+        std::map<std::string, datatype *> dt_map;
+        std::map<std::string, service *> svc_map;
+
+    public:
+        helper(const YAML::Node config_node = YAML::Node());
+};
+
+}; // namespace helper
+
+#endif // LN_HELPER__HELPER_H
+
