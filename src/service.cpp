@@ -22,9 +22,17 @@ std::ostream& ln_helper::operator<<(std::ostream& os, const ln_helper::service p
 }
 
 ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_helper::service p) {
-    for (const auto& f : p.request) {
+    for (unsigned i = 0; i < p.request.size(); ++i) {
+        field f = p.request[i];
         os << f;
+
+        if ((i+1) < p.request.size()) {
+            os << ",";
+        }
     }
+
+    os << "|";
+
     for (unsigned i = 0; i < p.response.size(); ++i) {
         field f = p.response[i];
         os << f;

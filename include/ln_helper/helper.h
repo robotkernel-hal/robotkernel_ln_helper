@@ -19,6 +19,9 @@ class helper {
 
     public:
         helper(const YAML::Node config_node = YAML::Node());
+
+        service *add_service(const YAML::Node& service_node);
+        datatype *add_datatype(const YAML::Node& datatype_node);
 };
 
 }; // namespace helper

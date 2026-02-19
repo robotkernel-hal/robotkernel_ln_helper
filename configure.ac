@@ -38,7 +38,7 @@ AC_CHECK_FUNCS([strdup])
 # Checks for library functions.
 AC_CHECK_LIB(dl, dlopen)
 
-AC_CONFIG_FILES([Makefile src/Makefile ln_helper.pc])
+AC_CONFIG_FILES([Makefile src/Makefile tools/service_generator/Makefile ln_helper.pc])
 
 AC_OUTPUT
 

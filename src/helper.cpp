@@ -9,15 +9,25 @@ helper::helper(const YAML::Node config_node) {
 
     if (node["datatypes"]) {
         for (const auto& d : node["datatypes"]) {
-            datatype *dt = new datatype(this, d);
-            dt_map[dt->name] = dt;
+            add_datatype(d);
         }
     }
 
     if (node["services"]) {
         for (const auto& d : node["services"]) {
-            service *svc = new service(this, d);
-            svc_map[svc->name] = svc;
+            add_service(d);
         }
     }
+}
+        
+service *helper::add_service(const YAML::Node& service_node) {
+    service *svc = new service(this, service_node);
+    svc_map[svc->name] = svc;
+    return svc;
+}
+
+datatype *helper::add_datatype(const YAML::Node& datatype_node) {
+    datatype *dt = new datatype(this, datatype_node);
+    dt_map[dt->name] = dt;
+    return dt;
 }

@@ -28,11 +28,16 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
     size_t array_size = 0;
 
     if (p.is_array) {
-        os << "[";
+        os << "uint32_t 4 1,["; // size field
     }
 
     if (p.type == "string") { // special case for ln/string
-        os << "[uint32_t 4 1,char* 1 1] 4 1";
+        if (p.is_array) {
+            os << "uint32_t 4 1,char* 1 1";
+        } else {
+            os << "[uint32_t 4 1,char* 1 1] 4 1";
+        }
+        array_size += 4;
     } else if (!is_builtin_dtype(p.type)) {
         if (p.parent->dt_map.find(p.type) != p.parent->dt_map.end()) {
             auto& f = *p.parent->dt_map[p.type];
@@ -77,6 +82,8 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::fie
         }
         
         os << local_dtype << array_marker << " " << p.name;
+    } else if (p.type == "bool") {
+        os << "uint8_t" << array_marker << " " << p.name;
     } else {
         os << p.type << array_marker << " " << p.name;
     }
