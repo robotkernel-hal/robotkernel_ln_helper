@@ -29,43 +29,43 @@ int usage(void) {
 
 int main(int argc, char **argv) {
     void *so_handle;
-    list<string> input_file_names;
-    string output_dir_name;
-    bool verbose = false;
+    string indir, outdir;
+    list<string> infns;
 
     for (int i = 1; i < argc; ++i) {
-        if ((strcmp(argv[i], "--input-file") == 0) || (strcmp(argv[i], "-i") == 0)) {
+        if ((strcmp(argv[i], "--indir") == 0) || (strcmp(argv[i], "-i") == 0)) {
             if (++i >= argc) {
-                printf("--input-file filename missing\n");
+                printf("--indir filename missing\n");
                 return usage();
             }
 
-            input_file_names.push_back(string(argv[i]));
-        } else if ((strcmp(argv[i], "--output-dir") == 0) || (strcmp(argv[i], "-o") == 0)) {
+            indir = string(argv[i]);
+        } else if ((strcmp(argv[i], "--outdir") == 0) || (strcmp(argv[i], "-o") == 0)) {
             if (++i >= argc) {
-                printf("--output-dir dirname missing\n");
+                printf("--outdir dirname missing\n");
                 return usage();
             }
 
-            output_dir_name = string(argv[i]);
-            if (!output_dir_name.empty() && (output_dir_name.back() == '/' || output_dir_name.back() == '\\')) {
-                output_dir_name.pop_back(); // entfernt das letzte Zeichen
+            outdir = string(argv[i]);
+            if (!outdir.empty() && (outdir.back() == '/' || outdir.back() == '\\')) {
+                outdir.pop_back(); // entfernt das letzte Zeichen
             }
-        } else if ((strcmp(argv[i], "--verbose") == 0) || (strcmp(argv[i], "-v") == 0)) {
-            verbose = true;
+        } else {
+            infns.push_back(argv[i]);
         }
     }
 
-    if (input_file_names.size() == 0) {
+    if ((indir == "") || (outdir == "") || (infns.size() == 0)) {
         return usage();
     }
 
     std::cout << "robotkernel service generator for links-and-nodes" << std::endl;
 
-    for (const auto& input_file_name : input_file_names) {
-        std::cout << "loading file \"" << input_file_name << "\"" << std::endl;
+    for (const auto& input_file_name : infns) {
+        string fn = indir + "/" + input_file_name;
+        std::cout << "loading file \"" << fn << "\"" << std::endl;
 
-        YAML::Node node = YAML::LoadFile(input_file_name);
+        YAML::Node node = YAML::LoadFile(fn);
 
         helper h(node);
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 
             auto create_md_file = [&](std::string mddef_name, const ln_mddef_stream& mdss) {
                 string file_name = mddef_name;
-                string dir_name = output_dir_name;
+                string dir_name = outdir;
                 for (size_t pos = 0; (pos = file_name.find('/')) != std::string::npos; ) {
                     dir_name += "/" + file_name.substr(0, pos);
                     file_name = file_name.substr(pos + 1);
