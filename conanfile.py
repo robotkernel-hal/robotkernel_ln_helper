@@ -50,5 +50,6 @@ class MainProject(ConanFile):
         self.cpp_info.libdirs = ['lib']
         self.cpp_info.resdirs = ['share']
 
-    
+        self.runenv_info.append_path("LD_LIBRARY_PATH", f"{self.package_folder}/lib")
+        self.runenv_info.append_path("PATH", f"{self.package_folder}/bin")
 
