@@ -27,18 +27,18 @@ std::ostream& ln_helper::operator<<(std::ostream& os, const ln_helper::field p) 
 ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_helper::field p) {
     size_t array_size = 0;
 
-    if (p.is_array) {
-        os << "uint32_t 4 1,["; // size field
-    }
-
     if (p.type == "string") { // special case for ln/string
         if (p.is_array) {
-            os << "uint32_t 4 1,char* 1 1";
+            os << "uint32_t 4 1,[uint32_t 4 1,char* 1 1]* 4 1";
         } else {
             os << "[uint32_t 4 1,char* 1 1] 4 1";
         }
         array_size += 4;
     } else if (!is_builtin_dtype(p.type)) {
+        if (p.is_array) {
+            os << "uint32_t 4 1,["; // size field
+        }
+
         if (p.parent->dt_map.find(p.type) != p.parent->dt_map.end()) {
             auto& f = *p.parent->dt_map[p.type];
             os << f;
@@ -48,13 +48,17 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
             ss << "GOT NOT BUILTIN TYPE: " << p.type << " -> NOT FOUND!!!\n";
             throw std::runtime_error(ss.str());
         }
+    
+        if (p.is_array) {
+            os << "]* " << array_size << " 1";
+        }
     } else {
         ssize_t dtype_size = ln_datatype_size(p.type);
-        os << p.type << " " << dtype_size << " 1";
-    }
-
-    if (p.is_array) {
-        os << "]* " << array_size << " 1";
+        if (p.is_array) {
+            os << "uint32_t 4 1," << p.type <<  "* " << dtype_size << " 1";
+        } else {
+            os << p.type << " " << dtype_size << " 1";
+        }
     }
 
     return os;
