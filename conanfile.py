@@ -2,7 +2,7 @@ from conans import ConanFile, AutoToolsBuildEnvironment, tools
 import os, re
 
 class MainProject(ConanFile):
-    name = "ln_helper"
+    name = "robotkernel_ln_helper"
     license = "GPLv3"
     author = "Robert Burger <robert.burger@dlr.de>"
     generators = "pkg_config"
