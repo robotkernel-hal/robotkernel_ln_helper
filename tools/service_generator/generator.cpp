@@ -6,145 +6,108 @@
 #include <errno.h>
 
 #include <list>
-//#include "ln_md_helper.h"
 #include <fstream>
 typedef void (*get_sd_t)(std::list<std::string>& sd_list);
 
-//#include "fs_tools.h"
 
 #include "ln_helper/field.h"
 #include "ln_helper/datatype.h"
 #include "ln_helper/service.h"
+#include "ln_helper/fs_tools.h"
 
 using namespace std;
-//using namespace ln_md_helper;
 using namespace ln_helper;
 
 int usage(void) {
     printf("usage: service_generator --input | -i <filename> [-v]\n");
     printf("\n");
-    printf("  --input_file, -i <filename> file to get service definitions from\n");
+    printf("  --input-file, -i <filename> file to get service definitions from\n");
+    printf("  --output-dir, -o <dirname>  directory to place ln service files to\n");
     printf("  --verbose, -v               be more verbose\n");
     return 0;
 }
 
 int main(int argc, char **argv) {
     void *so_handle;
-    string input_file_name;
+    list<string> input_file_names;
+    string output_dir_name;
     bool verbose = false;
 
     for (int i = 1; i < argc; ++i) {
-        if ((strcmp(argv[i], "--input") == 0) || (strcmp(argv[i], "-i") == 0)) {
+        if ((strcmp(argv[i], "--input-file") == 0) || (strcmp(argv[i], "-i") == 0)) {
             if (++i >= argc) {
-                printf("--input filename missing\n");
+                printf("--input-file filename missing\n");
                 return usage();
             }
 
-            input_file_name = string(argv[i]);
+            input_file_names.push_back(string(argv[i]));
+        } else if ((strcmp(argv[i], "--output-dir") == 0) || (strcmp(argv[i], "-o") == 0)) {
+            if (++i >= argc) {
+                printf("--output-dir dirname missing\n");
+                return usage();
+            }
 
+            output_dir_name = string(argv[i]);
+            if (!output_dir_name.empty() && (output_dir_name.back() == '/' || output_dir_name.back() == '\\')) {
+                output_dir_name.pop_back(); // entfernt das letzte Zeichen
+            }
         } else if ((strcmp(argv[i], "--verbose") == 0) || (strcmp(argv[i], "-v") == 0)) {
             verbose = true;
         }
     }
 
-    if (input_file_name == "") {
+    if (input_file_names.size() == 0) {
         return usage();
     }
 
-    printf( "service_generator\n" );
+    std::cout << "robotkernel service generator for links-and-nodes" << std::endl;
 
-    YAML::Node node = YAML::LoadFile(input_file_name);
+    for (const auto& input_file_name : input_file_names) {
+        std::cout << "loading file \"" << input_file_name << "\"" << std::endl;
 
-    helper h(node);
+        YAML::Node node = YAML::LoadFile(input_file_name);
 
-    for (const auto& kv : h.svc_map) {
-        service *svc = kv.second;
-        ln_signature_stream lss;
-        ln_mddef_stream mdss;
+        helper h(node);
 
-        stringstream ss;
-        ss << *svc;
-        printf("got service \n\"%s\"\n", ss.str().c_str());
-
-        lss << *svc;
-        printf("got sig\n%s\n", lss.str().c_str());
-
-        mdss << *svc;
-        printf("\ngot mddef\n%s\n", mdss.str().c_str());
-
-        for (const auto& kv : mdss.seen_defines) {
-            printf("\nalso need \"%s\"\n", kv.first.c_str());;
-
-            if (h.dt_map.find(kv.first) != h.dt_map.end()) {
-                ln_mddef_stream dtmdss;
-                dtmdss << *h.dt_map[kv.first];
-                printf("%s\n", dtmdss.str().c_str());
-            }
-        }
-    }
-#if 0
-    if (node["datatypes"]) {
-        for (const auto& d : node["datatypes"]) {
+        for (const auto& kv : h.svc_map) {
+            service *svc = kv.second;
             ln_signature_stream lss;
-
-            datatype *dt = new datatype(&h, d);
-            h.dt_map[dt->name] = dt;
-
-            stringstream ss;
-            ss << *dt;
-            printf("got datatype \n\"%s\"\n", ss.str().c_str());
-
-            lss << *dt;
-            printf("got sig\n%s\n", lss.str().c_str());
-        }
-    }
-    
-    if (node["services"]) {
-        for (const auto& d : node["services"]) {
-            ln_signature_stream lss;
-
-            service *svc = new service(&h, d);
-            h.svc_map[svc->name] = svc;
+            ln_mddef_stream mdss;
 
             stringstream ss;
             ss << *svc;
-            printf("got service \n\"%s\"\n", ss.str().c_str());
-
             lss << *svc;
-            printf("got sig\n%s\n", lss.str().c_str());
-        }
-    }
-#endif
+            mdss << *svc;
 
-#if 0
-    string name = ln_md_helper::get_as<string>(node, "name");
+            auto create_md_file = [&](std::string mddef_name, const ln_mddef_stream& mdss) {
+                string file_name = mddef_name;
+                string dir_name = output_dir_name;
+                for (size_t pos = 0; (pos = file_name.find('/')) != std::string::npos; ) {
+                    dir_name += "/" + file_name.substr(0, pos);
+                    file_name = file_name.substr(pos + 1);
+                }
 
-    if (node["request"]) {
-        printf("got request field\n");
+                make_path(dir_name);
+                file_name = dir_name + "/" + file_name;
+                std::cout << "processing md \"" << mddef_name << "\", creating " << file_name << std::endl;
 
-        printf("typedef struct %s_request {\n", name.c_str());
+                std::ofstream file(file_name);
+                file << mdss.str();
+                file.close();
+            };
 
-        for (const auto& entry : node["request"]) {
-            for (const auto& kv : entry) {
-                printf("  %s %s;\n", kv.first.as<string>().c_str(), kv.second.as<string>().c_str());
-                
+            create_md_file(svc->name, mdss);
+
+            for (const auto& kv : mdss.seen_defines) {
+                if (h.dt_map.find(kv.first) != h.dt_map.end()) {
+                    ln_mddef_stream dtmdss;
+                    dtmdss << *h.dt_map[kv.first];
+
+                    create_md_file(kv.first, dtmdss);
+                }
             }
         }
-        printf("} %s_request_t;\n", name.c_str());
     }
-
-    if (node["response"]) {
-        printf("got response field\n");
-    }
-
-    printf("\n");
-    printf("class %s_service_base : \n"
-            "    public robotkernel::service\n"
-            "{\n"
-            "    public:\n"
-            "        virtual void %s_handler(const %s_request_t& req, %s_response_t& resp) = 0;\n"
-            "};\n\n", name.c_str(), name.c_str(), name.c_str(), name.c_str());
-#endif
     
     return 0;
 }

@@ -6,9 +6,11 @@
 #include <direct.h>   // _mkdir
 #endif
 
-#include "fs_tools.h"
+#include "ln_helper/fs_tools.h"
 
-bool is_dir_exist(const std::string& path)
+using namespace ln_helper;
+
+bool ln_helper::is_dir_exist(const std::string& path)
 {
 #if defined(_WIN32)
     struct _stat info;
@@ -27,7 +29,7 @@ bool is_dir_exist(const std::string& path)
 #endif
 }
 
-bool make_path(const std::string& path)
+bool ln_helper::make_path(const std::string& path)
 {
 #if defined(_WIN32)
     int ret = _mkdir(path.c_str());
