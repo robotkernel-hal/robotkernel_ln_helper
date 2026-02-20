@@ -31,7 +31,7 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
         if (p.is_array) {
             os << "uint32_t 4 1,[uint32_t 4 1,char* 1 1]* 4 1";
         } else {
-            os << "[uint32_t 4 1,char* 1 1] 4 1";
+            os << "uint32_t 4 1,char* 1 1";
         }
         array_size += 4;
     } else if (!is_builtin_dtype(p.type)) {
@@ -72,12 +72,16 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::fie
     }
 
     if (p.type == "string") { // special case for ln/string
-        if (os.seen_defines.find("ln/string") == os.seen_defines.end()) {
-            os << "define string as \"ln/string\"\n";
-            os.seen_defines["ln/string"] = true;
-        }
+        if (p.is_array) { // use ln/string type
+            if (os.seen_defines.find("ln/string") == os.seen_defines.end()) {
+                os << "define string as \"ln/string\"\n";
+                os.seen_defines["ln/string"] = true;
+            }
 
-        os << "string" << array_marker << " " << p.name;
+            os << "string" << array_marker << " " << p.name;
+        } else {
+            os << "char* " << p.name;
+        }
     } else if (!is_builtin_dtype(p.type)) {
         std::string local_dtype = get_last_part(p.type);
         if (os.seen_defines.find(p.type) == os.seen_defines.end()) {
