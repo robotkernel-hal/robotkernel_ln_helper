@@ -18,11 +18,10 @@ class field {
         ssize_t size = -1;
 
     public:
-        field(helper *parent, const YAML::Node& config_node) :
-            parent(parent)
+        field(helper *parent, const std::string& name, const YAML::Node& config_node) :
+            parent(parent), name(name)
         {
             node = YAML::Clone(config_node);
-            name = ln_helper::get_as<std::string>(node, "name");
             type = ln_helper::get_as<std::string>(node, "type");
             dflt = ln_helper::get_as<std::string>(node, "default", "");
             is_array = ln_helper::get_as<bool>(node, "array", false);

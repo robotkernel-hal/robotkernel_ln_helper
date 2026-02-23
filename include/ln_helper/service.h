@@ -24,13 +24,13 @@ class service {
 
             if (node["request"]) {
                 for (const auto& f : node["request"]) {
-                    request.push_back(field(parent, f));
+                    request.push_back(field(parent, f.first.as<std::string>(), f.second));
                 }
             }
             
             if (node["response"]) {
                 for (const auto& f : node["response"]) {
-                    response.push_back(field(parent, f));
+                    response.push_back(field(parent, f.first.as<std::string>(), f.second));
                 }
             }
         }

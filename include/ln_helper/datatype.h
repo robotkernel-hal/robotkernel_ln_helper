@@ -22,7 +22,7 @@ class datatype {
             name = ln_helper::get_as<std::string>(node, "name");
 
             for (const auto& f : ln_helper::get_as<YAML::Node>(node, "fields")) {
-                childs.push_back(field(parent, f));
+                childs.push_back(field(parent, f.first.as<std::string>(), f.second));
             }
         }
         

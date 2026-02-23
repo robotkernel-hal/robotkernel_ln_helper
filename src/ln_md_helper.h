@@ -42,7 +42,7 @@ type get_as(const YAML::Node& node, const std::string key) {
         out << node;
 
         std::stringstream ss;
-        ss << "ERROR: key \"" << key << "\" not fount!\n\n" << out.c_str() << std::endl;
+        ss << "ERROR: key \"" << key << "\" not found!\n\n" << out.c_str() << std::endl;
         throw std::runtime_error(ss.str());
     }
 
