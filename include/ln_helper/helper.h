@@ -20,8 +20,8 @@ class helper {
     public:
         helper(const YAML::Node config_node = YAML::Node());
 
-        service *add_service(const YAML::Node& service_node);
-        datatype *add_datatype(const YAML::Node& datatype_node);
+        service *add_service(const std::string& name, const YAML::Node& service_node);
+        datatype *add_datatype(const std::string& name, const YAML::Node& datatype_node);
 };
 
 }; // namespace helper

@@ -15,11 +15,10 @@ class datatype {
         std::vector<field> childs; 
 
     public:
-        datatype(helper *parent, const YAML::Node& config_node) :
-            parent(parent)
+        datatype(helper *parent, const std::string& name, const YAML::Node& config_node) :
+            parent(parent), name(name)
         {
             node = YAML::Clone(config_node);
-            name = ln_helper::get_as<std::string>(node, "name");
 
             for (const auto& f : ln_helper::get_as<YAML::Node>(node, "fields")) {
                 childs.push_back(field(parent, f.first.as<std::string>(), f.second));

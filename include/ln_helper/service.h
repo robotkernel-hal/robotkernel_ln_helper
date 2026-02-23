@@ -16,11 +16,10 @@ class service {
         std::vector<field> response;
 
     public:
-        service(helper *parent, const YAML::Node& config_node) :
-            parent(parent)
+        service(helper *parent, const std::string& name, const YAML::Node& config_node) :
+            parent(parent), name(name)
         {
             node = YAML::Clone(config_node);
-            name = ln_helper::get_as<std::string>(node, "name");
 
             if (node["request"]) {
                 for (const auto& f : node["request"]) {
