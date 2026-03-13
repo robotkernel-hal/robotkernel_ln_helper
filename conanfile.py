@@ -1,4 +1,7 @@
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conan import ConanFile
+from conan import tools
+from conan.tools.files import mkdir, chdir, copy, save
+from conan.tools.gnu import Autotools, AutotoolsToolchain
 import os, re
 
 class MainProject(ConanFile):
@@ -8,7 +11,7 @@ class MainProject(ConanFile):
     generators = "pkg_config"
     url = "undefined"
     description = "Helpers for links-and-nodes support."
-    exports_sources = ["*", "!.gitignore"] + ["!%s" % x for x in tools.Git().excluded_files()]
+    exports_sources = ["*", "!.gitignore" ]
     settings = "os", "compiler", "build_type", "arch"
 
     def requirements(self):
@@ -26,9 +29,13 @@ class MainProject(ConanFile):
         with open(filename, 'w') as f:
             f.write(re.sub("VERSION *=.*[^\n]", f"VERSION = {self.version}", filedata))
 
+    def generate(self):
+        tc = AutotoolsToolchain(self)
+        tc.generate()
+
     def build(self):
         self.run("autoreconf -if")
-        autotools = AutoToolsBuildEnvironment(self)
+        autotools = Autotools(self)
         autotools.libs=[]
         autotools.include_paths=[]
         autotools.library_paths=[]
@@ -36,11 +43,11 @@ class MainProject(ConanFile):
             autotools.flags = ["-O0", "-g", "-fno-builtin-strlen"]
         else:
             autotools.flags = ["-O2"]
-        autotools.configure(configure_dir=".")
+        autotools.configure()
         autotools.make()
 
     def package(self):
-        autotools = AutoToolsBuildEnvironment(self)
+        autotools = Autotools(self)
         autotools.install()
 
     def package_info(self):
