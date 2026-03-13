@@ -8,7 +8,7 @@ class MainProject(ConanFile):
     name = "robotkernel_ln_helper"
     license = "GPLv3"
     author = "Robert Burger <robert.burger@dlr.de>"
-    generators = "pkg_config"
+    generators = "PkgConfigDeps"
     url = "undefined"
     description = "Helpers for links-and-nodes support."
     exports_sources = ["*", "!.gitignore" ]
