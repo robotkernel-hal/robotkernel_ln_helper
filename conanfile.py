@@ -18,16 +18,7 @@ class MainProject(ConanFile):
         self.requires("yaml-cpp/0.7.0@3rdparty/stable", transitive_headers=True, transitive_libs=True)
 
     def source(self):
-        filedata = None
-        filename = "project.properties"
-
-        if not os.path.isfile(filename):
-            return
-
-        with open(filename, 'r') as f:
-            filedata = f.read()
-        with open(filename, 'w') as f:
-            f.write(re.sub("VERSION *=.*[^\n]", f"VERSION = {self.version}", filedata))
+        self.run(f"sed 's/AC_INIT(.*/AC_INIT([robotkernel], [{self.version}], [{self.author}])/' configure.ac.in > configure.ac")
 
     def generate(self):
         tc = AutotoolsToolchain(self)
