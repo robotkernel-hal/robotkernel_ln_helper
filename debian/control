@@ -1,0 +1,35 @@
+Source: robotkernel-ln-helper
+Section: unknown
+Priority: optional
+Maintainer: Robert Burger <robert.burger@dlr.de>
+Build-Depends: debhelper-compat (= 13), 
+Standards-Version: 4.5.1
+Homepage: https://www.burger-system.de/robotkernel-ln-helper
+Vcs-Browser: https://github.com/robotkernel-hal/robotkernel-ln-helper.git
+Vcs-Git: https://github.com/robotkernel-hal/robotkernel-ln-helper.git
+Rules-Requires-Root: no
+
+Package: robotkernel-ln-helper-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Modular real-time robotics framework.
+ robotkernel is a modular real-time robotics framework for Linux-based 
+ control systems. It provides the infrastructure for loading, executing, 
+ and managing dynamically linked modules that communicate through shared 
+ memory and trigger-based scheduling. Designed for hard-real-time industrial 
+ use cases, robotkernel allows composition of complex automation pipelines 
+ from reusable components.
+
+Package: robotkernel-ln-helper
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Modular real-time robotics framework.
+ robotkernel is a modular real-time robotics framework for Linux-based 
+ control systems. It provides the infrastructure for loading, executing, 
+ and managing dynamically linked modules that communicate through shared 
+ memory and trigger-based scheduling. Designed for hard-real-time industrial 
+ use cases, robotkernel allows composition of complex automation pipelines 
+ from reusable components.

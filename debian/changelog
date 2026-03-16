@@ -1,0 +1,59 @@
+robotkernel-ln-helper (6.0.0) unstable; urgency=low
+
+  * add: LGPL-V3
+
+ -- Robert Burger <robert.burger@dlr.de>  Tue, 22 Jul 2025 09:19:32 +0200
+
+robotkernel-ln-helper (0.0.7) unstable; urgency=low
+
+  * Merge pull request #3 from robotkernel/feat/conan2_build
+  * chore: format
+  * feat: conan2 build
+
+ -- Mühlbauer, Maximilian Sebastian <Maximilian.Muehlbauer@dlr.de>  Fri, 1 Mar 2024 11:59:15 +0100
+
+robotkernel-ln-helper (0.0.6) unstable; urgency=low
+
+  * Merge pull request #2 from robotkernel/feat/upgrade_yaml_cpp
+  * chore(rmc build): use build profile
+  * chore(rmc build): set CONAN_V2_MODE
+  * chore(deps): update yaml-cpp to 0.7.0
+
+ -- Mühlbauer, Maximilian Sebastian <Maximilian.Muehlbauer@dlr.de>  Thu, 18 Jan 2024 10:33:57 +0100
+
+robotkernel-ln-helper (0.0.5) unstable; urgency=low
+
+  * add: missing service_generator files
+  * Merge branch 'release/0.0.5'
+  * fix: string namespace
+  * add service generator
+  * added bitarrX datatypes to uintX
+
+ -- Robert Burger <robert.burger@dlr.de>  Mon, 8 Jan 2024 11:08:57 +0100
+
+robotkernel-ln-helper (0.0.4) unstable; urgency=low
+
+  * Merge pull request #1 from robotkernel/fix/define_yaml_cpp_version
+  * fix: require same yaml-cpp version as robotkernel
+
+ -- Mühlbauer, Maximilian Sebastian <Maximilian.Muehlbauer@dlr.de>  Tue, 2 May 2023 17:57:34 +0200
+
+robotkernel-ln-helper (0.0.3) unstable; urgency=low
+
+  * CHANGE: removed dependecy to links-and-nodes
+
+ -- Robert Burger <robert.burger@dlr.de>  Fri, 3 Dec 2021 06:14:34 +0100
+
+robotkernel-ln-helper (0.0.2) unstable; urgency=low
+
+  * ADD: seqm
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 2 Dec 2021 16:46:55 +0100
+
+robotkernel-ln-helper (0.0.1) unstable; urgency=low
+
+  * BUILD: first success
+  * ADD: initial import
+
+ -- Robert Burger <robert.burger@dlr.de>  Thu, 2 Dec 2021 16:35:44 +0100
+
