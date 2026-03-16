@@ -2,6 +2,7 @@
 #define LN_HELPER__UTIL_H
 
 #include <string>
+#include <algorithm>
 #include <iostream>
 
 #include "yaml-cpp/yaml.h"
