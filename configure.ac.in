@@ -11,7 +11,7 @@ AC_CONFIG_MACRO_DIR([m4])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX([14], [ext], [mandatory])
-if test "$ac_cv_cxx_compile_cxx14" = "yes"; then
+if test "$ax_cv_cxx_compile_cxx14" = "yes"; then
     CXXFLAGS="$CXXFLAGS -std=c++14"
 else
     AC_MSG_ERROR([C++14 support is required but not available])
