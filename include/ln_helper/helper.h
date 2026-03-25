@@ -10,16 +10,19 @@ namespace ln_helper {
 // forward decls
 class datatype;
 class service;
+class process_data;
 
 class helper {
     public:
         YAML::Node node;
         std::map<std::string, datatype *> dt_map;
         std::map<std::string, service *> svc_map;
+        std::map<std::string, process_data *> pd_map;
 
     public:
         helper(const YAML::Node config_node = YAML::Node());
 
+        process_data *add_pd(const std::string& name, const YAML::Node& pd_node);
         service *add_service(const std::string& name, const YAML::Node& service_node);
         datatype *add_datatype(const std::string& name, const YAML::Node& datatype_node);
 };

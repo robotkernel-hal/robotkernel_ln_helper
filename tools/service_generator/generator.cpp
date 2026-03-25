@@ -13,6 +13,7 @@ typedef void (*get_sd_t)(std::list<std::string>& sd_list);
 #include "ln_helper/field.h"
 #include "ln_helper/datatype.h"
 #include "ln_helper/service.h"
+#include "ln_helper/process_data.h"
 #include "ln_helper/fs_tools.h"
 
 using namespace std;
@@ -68,6 +69,23 @@ int main(int argc, char **argv) {
         YAML::Node node = YAML::LoadFile(fn);
 
         helper h(node);
+            
+        auto create_md_file = [&](std::string mddef_name, const ln_mddef_stream& mdss) {
+            string file_name = mddef_name;
+            string dir_name = outdir;
+            for (size_t pos = 0; (pos = file_name.find('/')) != std::string::npos; ) {
+                dir_name += "/" + file_name.substr(0, pos);
+                file_name = file_name.substr(pos + 1);
+            }
+
+            make_path(dir_name);
+            file_name = dir_name + "/" + file_name;
+            std::cout << "processing md \"" << mddef_name << "\", creating " << file_name << std::endl;
+
+            std::ofstream file(file_name);
+            file << mdss.str();
+            file.close();
+        };
 
         for (const auto& kv : h.svc_map) {
             service *svc = kv.second;
@@ -79,23 +97,6 @@ int main(int argc, char **argv) {
             lss << *svc;
             mdss << *svc;
 
-            auto create_md_file = [&](std::string mddef_name, const ln_mddef_stream& mdss) {
-                string file_name = mddef_name;
-                string dir_name = outdir;
-                for (size_t pos = 0; (pos = file_name.find('/')) != std::string::npos; ) {
-                    dir_name += "/" + file_name.substr(0, pos);
-                    file_name = file_name.substr(pos + 1);
-                }
-
-                make_path(dir_name);
-                file_name = dir_name + "/" + file_name;
-                std::cout << "processing md \"" << mddef_name << "\", creating " << file_name << std::endl;
-
-                std::ofstream file(file_name);
-                file << mdss.str();
-                file.close();
-            };
-
             create_md_file(svc->name, mdss);
 
             for (const auto& kv : mdss.seen_defines) {
@@ -106,6 +107,22 @@ int main(int argc, char **argv) {
                     create_md_file(kv.first, dtmdss);
                 }
             }
+        }
+
+        for (const auto& kv : h.dt_map) {
+            datatype *dt = kv.second;
+            ln_mddef_stream mdss;
+            mdss << *dt;
+
+            create_md_file(dt->name, mdss);
+        }
+
+        for (const auto& kv : h.pd_map) {
+            process_data *pd = kv.second;
+            ln_mddef_stream mdss;
+            mdss << *pd;
+
+            create_md_file(pd->name, mdss);
         }
     }
     

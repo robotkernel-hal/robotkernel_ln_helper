@@ -10,6 +10,6 @@ include_HEADERS = $(top_srcdir)/include/ln_helper/service.h \
 				  $(top_srcdir)/include/ln_helper/fs_tools.h
 
 lib_LTLIBRARIES = libln_helper.la
-libln_helper_la_SOURCES = fs_tools.cpp service.cpp field.cpp datatype.cpp helper.cpp
+libln_helper_la_SOURCES = fs_tools.cpp service.cpp field.cpp datatype.cpp helper.cpp process_data.cpp
 libln_helper_la_CXXFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/src/ @YAML_CPP_CFLAGS@
 

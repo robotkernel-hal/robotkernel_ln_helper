@@ -89,11 +89,23 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::fie
             os.seen_defines[p.type] = true;
         }
         
-        os << local_dtype << array_marker << " " << p.name;
+        if (p.size > 0) {
+            os << local_dtype << " " << p.name << "[" << p.size << "]";
+        } else {
+            os << local_dtype << array_marker << " " << p.name;
+        }
     } else if (p.type == "bool") {
-        os << "uint8_t" << array_marker << " " << p.name;
+        if (p.size > 0) {
+            os << "uint8_t " << p.name << "[" << p.size << "]";
+        } else {
+            os << "uint8_t" << array_marker << " " << p.name;
+        }
     } else {
-        os << p.type << array_marker << " " << p.name;
+        if (p.size > 0) {
+            os << p.type << " " << p.name << "[" << p.size << "]";
+        } else {
+            os << p.type << array_marker << " " << p.name;
+        }
     }
     return os;
 }
