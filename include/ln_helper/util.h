@@ -206,7 +206,7 @@ static inline bool is_builtin_dtype(const std::string& type_name) {
     return std::find(builtin_dtypes.begin(), builtin_dtypes.end(), type_name) != builtin_dtypes.end();
 }
 
-static inline std::pair<std::string, int> ln_datatype_size_data[] = {
+static std::pair<std::string, int> ln_datatype_size_data[] = {
     std::make_pair("int64_t", 8),
     std::make_pair("uint64_t", 8),
     std::make_pair("int32_t", 4),
