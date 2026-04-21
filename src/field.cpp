@@ -67,6 +67,12 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
 ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::field p) {
     std::string array_marker = "";
 
+    if (p.is_bitfield) {
+        for (const auto& bf : p.bitfield) {
+            os << "# " << bf.first << ", " << bf.second << " bits\n";
+        }
+    }
+
     if (p.is_array) {
         array_marker = "*";
     }

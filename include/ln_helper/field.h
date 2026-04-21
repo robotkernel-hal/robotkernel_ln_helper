@@ -16,6 +16,8 @@ class field {
         std::string dflt = "";
         bool is_array = false;
         ssize_t size = -1;
+        bool is_bitfield = false;
+        std::vector<std::pair<std::string, int> > bitfield;
 
     public:
         field(helper *parent, const std::string& name, const YAML::Node& config_node) :
@@ -26,6 +28,14 @@ class field {
             dflt = ln_helper::get_as<std::string>(node, "default", "");
             is_array = ln_helper::get_as<bool>(node, "array", false);
             size = ln_helper::get_as<ssize_t>(node, "size", -1);
+
+            if (node["bitfield"]) {
+                is_bitfield = true;
+                for (const auto& bt : node["bitfield"]) {
+                    bitfield.push_back(std::make_pair<std::string, int>(
+                                bt.first.as<std::string>(), get_as<int>(bt.second, "bitsize")));
+                }
+            }
         }
         
         size_t ln_size(void) const;

@@ -5,6 +5,11 @@ using namespace ln_helper;
 std::ostream& ln_helper::operator<<(std::ostream& os, const ln_helper::process_data p) {
     os << "process_data{name='" << p.name << "', fields=[ " << std::endl;
     for (const auto& f : p.fields) {
+        if (f.is_bitfield) {
+            for (const auto& bf : f.bitfield) {
+                os << "# " << bf.first << ", " << bf.second << " bits" << std::endl;
+            }
+        }
         os << f << std::endl;
     }
     os << " ]," << std::endl;
