@@ -7,6 +7,7 @@ include_HEADERS = $(top_srcdir)/include/ln_helper/service.h \
 				  $(top_srcdir)/include/ln_helper/datatype.h \
 				  $(top_srcdir)/include/ln_helper/helper.h \
 				  $(top_srcdir)/include/ln_helper/util.h \
+				  $(top_srcdir)/include/ln_helper/process_data.h \
 				  $(top_srcdir)/include/ln_helper/fs_tools.h
 
 lib_LTLIBRARIES = libln_helper.la
