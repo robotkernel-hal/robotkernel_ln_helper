@@ -181,7 +181,7 @@ type get_as(const YAML::Node& node, const std::string key, type dflt) {
 }
 
 // Checks whether `str' starts with `start' ignoring case
-static bool starts_with(const std::string& str, const std::string& start) {
+static inline bool starts_with(const std::string& str, const std::string& start) {
     if (&start == &str) 
         return true; // str and start are the same string
 
@@ -196,7 +196,7 @@ static bool starts_with(const std::string& str, const std::string& start) {
     return true;
 }
 
-static bool is_builtin_dtype(const std::string& type_name) {
+static inline bool is_builtin_dtype(const std::string& type_name) {
     const std::vector<std::string> builtin_dtypes{
         "int8_t", "int16_t", "int32_t", "int64_t",
         "uint8_t", "uint16_t", "uint32_t", "uint64_t",
@@ -206,7 +206,7 @@ static bool is_builtin_dtype(const std::string& type_name) {
     return std::find(builtin_dtypes.begin(), builtin_dtypes.end(), type_name) != builtin_dtypes.end();
 }
 
-static std::pair<std::string, int> ln_datatype_size_data[] = {
+static inline std::pair<std::string, int> ln_datatype_size_data[] = {
     std::make_pair("int64_t", 8),
     std::make_pair("uint64_t", 8),
     std::make_pair("int32_t", 4),
@@ -233,7 +233,7 @@ static std::map<std::string, int> ln_datatype_size_map(
         ln_datatype_size_data + sizeof(ln_datatype_size_data) / 
         sizeof(ln_datatype_size_data[0]));
 
-static int ln_datatype_size(const std::string& ln_datatype) {
+static inline int ln_datatype_size(const std::string& ln_datatype) {
     if (ln_datatype_size_map.find(ln_datatype) != 
             ln_datatype_size_map.end())
         return ln_datatype_size_map[ln_datatype];
@@ -241,7 +241,7 @@ static int ln_datatype_size(const std::string& ln_datatype) {
     return 0;
 }
 
-static std::string get_last_part(const std::string& path) {
+static inline std::string get_last_part(const std::string& path) {
     std::istringstream iss(path);
     std::string part;
     std::string lastPart;
