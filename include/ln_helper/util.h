@@ -200,7 +200,7 @@ static inline bool is_builtin_dtype(const std::string& type_name) {
     const std::vector<std::string> builtin_dtypes{
         "int8_t", "int16_t", "int32_t", "int64_t",
         "uint8_t", "uint16_t", "uint32_t", "uint64_t",
-        "float", "double", "char", "bool", "string"
+        "float", "double", "char", "string"
     };
 
     return std::find(builtin_dtypes.begin(), builtin_dtypes.end(), type_name) != builtin_dtypes.end();

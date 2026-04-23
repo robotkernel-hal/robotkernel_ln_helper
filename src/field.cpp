@@ -52,6 +52,13 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
         if (p.is_array) {
             os << "]* " << array_size << " 1";
         }
+    } else if (p.type == "bool") { // special case for bool type
+        ssize_t dtype_size = ln_datatype_size("uint8_t");
+        if (p.is_array) {
+            os << "uint32_t 4 1,uint8_t* " << dtype_size << " 1";
+        } else {
+            os << "uint8_t 1 1";
+        }
     } else {
         ssize_t dtype_size = ln_datatype_size(p.type);
         if (p.is_array) {
