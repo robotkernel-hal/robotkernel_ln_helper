@@ -34,6 +34,13 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
             os << "uint32_t 4 1,char* 1 1";
         }
         array_size += 4;
+    } else if (p.type == "bool") { // special case for bool type
+        ssize_t dtype_size = ln_datatype_size("uint8_t");
+        if (p.is_array) {
+            os << "uint32_t 4 1,uint8_t* " << dtype_size << " 1";
+        } else {
+            os << "uint8_t 1 1";
+        }
     } else if (!is_builtin_dtype(p.type)) {
         if (p.is_array) {
             os << "uint32_t 4 1,["; // size field
@@ -51,13 +58,6 @@ ln_signature_stream& ln_helper::operator<<(ln_signature_stream& os, const ln_hel
     
         if (p.is_array) {
             os << "]* " << array_size << " 1";
-        }
-    } else if (p.type == "bool") { // special case for bool type
-        ssize_t dtype_size = ln_datatype_size("uint8_t");
-        if (p.is_array) {
-            os << "uint32_t 4 1,uint8_t* " << dtype_size << " 1";
-        } else {
-            os << "uint8_t 1 1";
         }
     } else {
         ssize_t dtype_size = ln_datatype_size(p.type);
@@ -95,6 +95,12 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::fie
         } else {
             os << "char* " << p.name;
         }
+    } else if (p.type == "bool") {
+        if (p.size > 0) {
+            os << "uint8_t " << p.name << "[" << p.size << "]";
+        } else {
+            os << "uint8_t" << array_marker << " " << p.name;
+        }
     } else if (!is_builtin_dtype(p.type)) {
         std::string local_dtype = get_last_part(p.type);
         if (os.seen_defines.find(p.type) == os.seen_defines.end()) {
@@ -106,12 +112,6 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::fie
             os << local_dtype << " " << p.name << "[" << p.size << "]";
         } else {
             os << local_dtype << array_marker << " " << p.name;
-        }
-    } else if (p.type == "bool") {
-        if (p.size > 0) {
-            os << "uint8_t " << p.name << "[" << p.size << "]";
-        } else {
-            os << "uint8_t" << array_marker << " " << p.name;
         }
     } else {
         if (p.size > 0) {
