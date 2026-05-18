@@ -128,10 +128,16 @@ jobs:
           if [[ "$DISTRO" == "ubuntu-24.04" || "$DISTRO" == "ubuntu-22.04" ]]; then
             OLD_EXT=".ddeb"
             NEW_EXT=".deb"
+            CHANGES_FILE="${PKGNAME}_${SANITIZED_IMAGE}_amd64.changes"
 
             OLD_FILE="${PKGNAME}-dbgsym_${SANITIZED_IMAGE}_amd64${OLD_EXT}"
             NEW_FILE="${PKGNAME}-dbgsym_${SANITIZED_IMAGE}_amd64${NEW_EXT}"
-            CHANGES_FILE="${PKGNAME}_${SANITIZED_IMAGE}_amd64.changes"
+
+            mv "../$OLD_FILE" "../$NEW_FILE"
+            sed -i "s/${OLD_FILE}/${NEW_FILE}/g" "../$CHANGES_FILE"
+            
+            OLD_FILE="${PKGNAME}-dev-dbgsym_${SANITIZED_IMAGE}_amd64${OLD_EXT}"
+            NEW_FILE="${PKGNAME}-dev-dbgsym_${SANITIZED_IMAGE}_amd64${NEW_EXT}"
 
             mv "../$OLD_FILE" "../$NEW_FILE"
             sed -i "s/${OLD_FILE}/${NEW_FILE}/g" "../$CHANGES_FILE"
