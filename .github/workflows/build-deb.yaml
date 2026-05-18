@@ -137,6 +137,8 @@ jobs:
             sed -i "s/${OLD_FILE}/${NEW_FILE}/g" "../$CHANGES_FILE"
           fi
           
+          ls -l ../
+
           DBG_FILE="../${PKGNAME}-dbgsym_${SANITIZED_IMAGE}_amd64.deb"
           DEV_FILE="../${PKGNAME}-dev_${SANITIZED_IMAGE}_amd64.deb"
           DEB_FILE="../${PKGNAME}_${SANITIZED_IMAGE}_amd64.deb"
