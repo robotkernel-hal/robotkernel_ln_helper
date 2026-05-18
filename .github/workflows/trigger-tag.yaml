@@ -25,3 +25,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   run-shared:
     uses: ./.github/workflows/build-deb.yaml
+    secrets: inherit
