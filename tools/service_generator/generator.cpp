@@ -20,10 +20,10 @@ using namespace std;
 using namespace ln_helper;
 
 int usage(void) {
-    printf("usage: service_generator --input | -i <filename> [-v]\n");
+    printf("usage: service_generator --indir|-i <dirname> --outdir|-o <dirname> <mdfiles...>[-v]\n");
     printf("\n");
-    printf("  --input-file, -i <filename> file to get service definitions from\n");
-    printf("  --output-dir, -o <dirname>  directory to place ln service files to\n");
+    printf("  --indir, -i <dirname> directory to get service definitions from\n");
+    printf("  --outdir, -o <dirname>  directory to place ln service files to\n");
     printf("  --verbose, -v               be more verbose\n");
     return 0;
 }
@@ -124,6 +124,8 @@ int main(int argc, char **argv) {
 
             create_md_file(pd->name, mdss);
         }
+
+        std::cout << "file processing done" << std::endl;
     }
     
     return 0;
