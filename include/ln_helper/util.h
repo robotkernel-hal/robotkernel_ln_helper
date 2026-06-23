@@ -88,6 +88,44 @@ public:
     }
 };
 
+class rk_def_stream {
+private:
+    std::string buffer;
+
+public:
+    // Stream-ähnliche Methoden
+    rk_def_stream& operator<<(const std::string& s) {
+        buffer += s;
+        return *this;
+    }
+    
+    rk_def_stream& operator<<(const char* s) {
+        buffer += s;
+        return *this;
+    }
+    
+    template <typename T>
+    rk_def_stream& operator<<(T n) {
+        buffer += std::to_string(n);
+        return *this;
+    }
+
+    // Optional: Ausgabe in std::cout
+    void flush() const {
+        std::cout << buffer;
+    }
+
+    // Optional: Rückgabe als std::string
+    std::string str() const {
+        return buffer;
+    }
+
+    // Optional: Clear
+    void clear() {
+        buffer.clear();
+    }
+};
+
 /**
  * @brief Retrieve a typed value from a YAML node.
  *
