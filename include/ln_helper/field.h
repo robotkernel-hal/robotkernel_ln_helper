@@ -69,7 +69,7 @@ class field {
                 if (dtype == "skip_bytes") {
                     size = atoi(name.c_str());
                     type = "uint8_t";
-                    name = (std::ostringstream{} << "unused_" << cnt).str();
+                    name = (stream_helper() << "unused_" << cnt);
                     cnt++;
                 } else {
                     size = n_elements;

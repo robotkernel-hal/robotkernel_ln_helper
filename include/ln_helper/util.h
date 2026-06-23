@@ -292,6 +292,25 @@ static inline std::string get_last_part(const std::string& path) {
     return lastPart;
 }
 
+#include <sstream>
+struct stream_helper
+{
+    std::ostringstream stream;
+    template< typename T >
+    stream_helper& operator<<( const T& value )
+    {
+        stream << value; return *this;
+    }
+    std::string str() const
+    {
+        return stream.str();
+    }
+    operator std::string() const
+    {
+        return stream.str();
+    }
+};
+
 }; // namespace ln_helper
    
 #endif // LN_HELPER__UTIL_H
