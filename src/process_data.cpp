@@ -37,3 +37,10 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::pro
     return os;
 }
 
+rk_def_stream& ln_helper::operator<<(rk_def_stream& os, const ln_helper::process_data p) {
+    for (const auto& f : p.fields) {
+        os << f << "\n";
+    }
+
+    return os;
+}

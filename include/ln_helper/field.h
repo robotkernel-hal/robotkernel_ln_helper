@@ -20,6 +20,12 @@ class field {
         std::vector<std::pair<std::string, int> > bitfield;
 
     public:
+        //! @brief Construction from robotkernel pd format
+        /*!
+         * @param parent[in]        Pointer to helper parent.
+         * @param name[in]          Field name.
+         * @param config_node[in]   Node containing config for field.
+         */
         field(helper *parent, const std::string& name, const YAML::Node& config_node) :
             parent(parent), name(name)
         {
@@ -38,12 +44,50 @@ class field {
             }
         }
         
+        //! @brief Construction from lnrk pd format
+        /*!
+         * @param parent[in]        Pointer to helper parent.
+         * @param config_node[in]   Node containing lnrk pd config.
+         */
+        field(helper *parent, const YAML::Node& config_node, unsigned int& cnt) :
+            parent(parent)
+        {
+            for (const auto& entry : config_node) {
+                // should be only one
+                std::string dtype = entry.first.as<std::string>();
+                name = entry.second.as<std::string>();
+
+                unsigned int n_elements = 1;
+
+                if (dtype.substr(dtype.size() - 1, 1) == "]" && dtype.find('[')) {
+                    std::string::size_type p = dtype.find('[');
+                    std::string n_elements_str = dtype.substr(p + 1, dtype.size() - p - 1 - 1);
+                    n_elements = atoi(n_elements_str.c_str());
+                    dtype = dtype.substr(0, p);
+                }
+
+                if (dtype == "skip_bytes") {
+                    size = atoi(name.c_str());
+                    type = "uint8_t";
+                    name = (std::ostringstream{} << "unused_" << cnt).str();
+                    cnt++;
+                } else {
+                    size = n_elements;
+                    type = dtype;
+                }
+                    
+                if (size <= 1) size = -1;
+                else is_array = true;
+            }
+        }
+
         size_t ln_size(void) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const field p);
 ln_signature_stream& operator<<(ln_signature_stream& os, const field p);
 ln_mddef_stream& operator<<(ln_mddef_stream& os, const field p);
+rk_def_stream& operator<<(rk_def_stream& os, const field p);
 
 }; // namespace ln_helper
  

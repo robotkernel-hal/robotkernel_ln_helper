@@ -123,6 +123,22 @@ ln_mddef_stream& ln_helper::operator<<(ln_mddef_stream& os, const ln_helper::fie
     return os;
 }
 
+rk_def_stream& ln_helper::operator<<(rk_def_stream& os, const ln_helper::field p) {
+    os << p.name << ": { type: " << p.type;
+    
+    if (p.is_bitfield) {
+        printf("unhandled bitfield!!!\n");
+    }
+
+    if (p.is_array) {
+        os << ", array: true, size: " << p.size;
+    }
+
+    os << " }";
+
+    return os;
+}
+
 size_t field::ln_size(void) const {
     size_t ret = 0;
 

@@ -20,8 +20,22 @@ public:
     {
         node = YAML::Clone(config_node);
 
-        for (const auto& f : node) {
-            fields.push_back(field(parent, f.first.as<std::string>(), f.second));
+        if (node.Type() == YAML::NodeType::Scalar) {
+            printf("unhandled Scalar datatype\n");
+        } else if (node.Type() == YAML::NodeType::Map) {
+            // robotkernel pd format
+            for (const auto& f : node) {
+                fields.push_back(field(parent, f.first.as<std::string>(), f.second));
+            }
+        } else if (node.Type() == YAML::NodeType::Sequence) {
+            unsigned int cnt = 0;
+
+            // lnrk pd format
+            for (const auto& f : node) {
+                fields.push_back(field(parent, f, cnt));
+            }
+        } else {
+            printf("unknown node type\n");
         }
     }
 };
@@ -29,6 +43,7 @@ public:
 std::ostream& operator<<(std::ostream& os, const process_data p);
 ln_signature_stream& operator<<(ln_signature_stream& os, const process_data p);
 ln_mddef_stream& operator<<(ln_mddef_stream& os, const process_data p);
+rk_def_stream& operator<<(rk_def_stream& os, const process_data p);
 
 }; // namespace ln_helper
 
